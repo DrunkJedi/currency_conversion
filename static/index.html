@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Currency exchange</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+<div id="app" class="container" style="padding-top: 20px">
+    <div class="row">
+        <div class="input-group mb-3 col-sm">
+            <input type="text" class="form-control" placeholder="Value" aria-label="Value"
+                   aria-describedby="basic-addon1" v-model="value" v-on:change="update()">
+        </div>
+        <div class="input-group mb-3 col-sm">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelectFrom">From</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelectFrom" v-model="from" v-on:change="update()">
+                <option selected value="">Choose...</option>
+                <option value="CZK">Czech koruna</option>
+                <option value="EUR">Euro</option>
+                <option value="PLN">Polish złoty</option>
+                <option value="USD">US dollar</option>
+            </select>
+        </div>
+        <div class="input-group mb-3 col-sm">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelectTo">To</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelectTo" v-model="to" v-on:change="update()">
+                <option selected value="">Choose...</option>
+                <option value="CZK">Czech koruna</option>
+                <option value="EUR">Euro</option>
+                <option value="PLN">Polish złoty</option>
+                <option value="USD">US dollar</option>
+            </select>
+        </div>
+        <div class="form-group row mb-3 col-sm">
+            <div style="padding: 6px;" v-if="result">{{result}}</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        from: "",
+        to: "",
+        value: "",
+        result: null
+      },
+      methods: {
+       update(){
+        console.log(this.from, this.to, this.value);
+        if(this.from.length && this.to.length && this.value.length){
+            var xhr = new XMLHttpRequest();
+            var params = 'from=' + encodeURIComponent(this.from) +
+              '&to=' + encodeURIComponent(this.to) + '&value=' + encodeURIComponent(this.value);
+            xhr.open("GET", '/api/?' + params, true);
+            var ths = this;
+            xhr.onreadystatechange = function(){
+                if (this.readyState != 4) return;
+                ths.result = JSON.parse(this.responseText).value;
+            };
+            xhr.send();
+        }
+       }
+      }
+    })
+</script>
+</body>
+</html>
